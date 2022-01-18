@@ -1,0 +1,26 @@
+.captionInput {
+  border: none;
+  width: 80%;
+}
+
+.captionInput:focus {
+  outline: none;
+}
+
+.imageContainer {
+  padding: 0 20px 10px 20px;
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  object-fit: cover;
+}
+
+.cancelImage {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  cursor: pointer;
+  opacity: 0.7;
+}
