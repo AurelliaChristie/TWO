@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 
 import Post from "../Post/Post";
 import "./Timeline.css";
 import CreatePost from "../Post/CreatePost";
-
-import { Users, Posts } from "../../dummyData";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const Timeline = () => {
+  const {user} = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     const getPosts = async ()  => {
-      const fetchPosts = await axios.get("http://localhost:8000/posts/timeline/61e6d1fafde6ac7f359ff3cd");
+      const fetchPosts = await axios.get(`http://localhost:8000/posts/timeline/${user._id}`);
       setPosts(fetchPosts.data.data);
     }
     getPosts();
@@ -21,7 +21,7 @@ const Timeline = () => {
   return (
     <div className="feed mb-4">
       <div className="px-3 py-5 mt-2 mb-4">
-        <CreatePost user={Users[0]}/>
+        <CreatePost user={user._id}/>
         {posts?.map((p) => (
           <Post key={p._id} post={p} />
         ))}
