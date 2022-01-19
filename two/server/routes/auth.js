@@ -2,6 +2,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Import models
 const User = require("../models/User");
@@ -24,7 +25,7 @@ router.post("/signup", async (req, res) => {
                 data: saveUser
             });
         } catch(error) {
-            res.status(500).send(error);
+            res.status(500).send(error.response.data);
         }
     } else {
         return res.status(400).send("Password and password confirmation contain different values.");
@@ -44,9 +45,14 @@ router.post("/login", async (req, res) => {
                 if(!validPassword){
                     res.status(400).json("Wrong Password.");
                 } else {
+                    const token = jwt.sign({
+                        ...user
+                    },
+                        process.env.TOKEN
+                    )
                     res.status(200).json({
                         message: "Successfully logged in.",
-                        data: user
+                        token: token
                     });
                 }
             } catch (error) {

@@ -2,7 +2,7 @@ export const AuthReducer = (user, action) => {
     switch(action.type) {
         case "LOGIN":
             return {
-                loggedIn : action.username
+                loggedIn : action.user
             };
         case "LOGOUT":
             return {

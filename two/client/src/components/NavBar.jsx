@@ -1,36 +1,48 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Navbar, Container, Nav, Form, FormControl, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AuthContext } from '../contexts/AuthContext';
 
 import logo from '../assets/logo.png';
 
 import "./NavBar.css";
 
 const NavBar = () => {
+    const { user } = useContext(AuthContext);
+
+    const [login, setLogin] = useState(false);
+
+    useEffect(() => {
+        if(user.loggedIn !== null){
+           setLogin(true)
+        }
+    },[user]);
+
     // Landing page
-    // return (
-        // <Navbar bg="light" variant="light" expand="lg">
-        //         <Container fluid>
-        //             <Navbar.Brand>
-        //                 <Link to="/">
-        //                     <img src={logo} alt="logo" width="70px" height="40px"/>
-        //                 </Link>
-        //             </Navbar.Brand>
-        //             <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        //             <Navbar.Collapse className="justify-content-end">
-        //                 <Nav>
-        //                     <Link to="/login" className="text-black text-decoration-none mx-2 my-auto">Log In</Link>
-        //                     <div className="buttons">
-        //                         <Link to="/signup" className="btn btn-dark btn-md" style={{marginRight: "20px", backgroundColor: "#1640E4", borderColor: "#1640E4"}}>Sign Up</Link>
-        //                     </div>
-        //                 </Nav>
-        //             </Navbar.Collapse>
-        //         </Container>
-        // </Navbar>
-    // )
-    
-    // If logged in
+    if(!login){
+        return (
+            <Navbar bg="light" variant="light" expand="lg" className="fixed-top">
+                    <Container fluid>
+                        <Navbar.Brand>
+                            <Link to="/">
+                                <img src={logo} alt="logo" width="70px" height="40px"/>
+                            </Link>
+                        </Navbar.Brand>
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        <Navbar.Collapse className="justify-content-end">
+                            <Nav>
+                                <Link to="/login" className="text-black text-decoration-none mx-2 my-auto">Log In</Link>
+                                <div className="buttons">
+                                    <Link to="/signup" className="btn btn-dark btn-md" style={{marginRight: "20px", backgroundColor: "#1640E4", borderColor: "#1640E4"}}>Sign Up</Link>
+                                </div>
+                            </Nav>
+                        </Navbar.Collapse>
+                    </Container>
+            </Navbar>
+        )
+    } else {
+        // If logged in
     return(
         <div className="navs" className="fixed-top">
         <Navbar bg="light" variant="light" expand="lg">
@@ -69,6 +81,7 @@ const NavBar = () => {
         </Navbar>
         </div>
     )
+    }
 };
 
 export default NavBar;

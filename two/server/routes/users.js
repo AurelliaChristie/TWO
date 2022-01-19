@@ -2,15 +2,40 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 // Import models
 const User = require("../models/User");
 
+// Middleware
+const authenticateJWT = (req, res, next) => {
+    // Take request authorization
+    const authHeader = req.headers.authorization;
+
+    if(authHeader){
+        // Take token
+        const token = authHeader.split(" ")[1];
+
+        // Verify JWT
+        jwt.verify(token, process.env.TOKEN, (err, user) => {
+            if(err){
+                return res.sendStatus(403);
+            }
+
+            // If verified
+            req.user = user._doc;
+            next();
+        });
+    }else{
+        res.sendStatus(401);
+    }
+}
+
 // Add routes
-router.get("/:username", async(req, res) => {
+router.get("/", authenticateJWT, async(req, res) => {
     try{
         const user = await User.findOne({
-            username: req.params.username
+            username: req.user.username
         });
         const {password, updatedAt, __v, ...other} = user._doc;
         res.status(200).json({
@@ -28,7 +53,16 @@ router.put("/:userId", async(req, res) => {
             const user = await User.findByIdAndUpdate(req.params.userId, {
                 $set: req.body
             });
-            res.status(200).json("Account has been updated.");
+            const updatedUser = await User.findById(req.params.userId);
+            const token = jwt.sign({
+                ...updatedUser
+            },
+                process.env.TOKEN
+            )
+            res.status(200).json({
+                message: "Account has been updated.",
+                token: token
+            });
         } catch (error) {
             return res.status(500).json(error);
         }
@@ -50,7 +84,16 @@ router.put("/:userId/password", async(req, res) => {
                 const user = await User.findByIdAndUpdate(req.params.userId, {
                     password: req.body.password
                 });
-                res.status(200).json("Password has been updated.");
+                const updatedUser = await User.findById(req.params.userId);
+                const token = jwt.sign({
+                    ...updatedUser
+                },
+                    process.env.TOKEN
+                )
+                res.status(200).json({
+                    message: "Password has been updated.",
+                    token: token
+                });
             } catch (error) {
                 return res.status(500).json(error);
             }
@@ -95,13 +138,15 @@ router.put("/:userId/follow", async(req, res) => {
                         profilePicture: user.profilePicture
                     }}
                 });
+                const updatedUser = await User.findById(currentUser._id);
+                const token = jwt.sign({
+                    ...updatedUser
+                },
+                    process.env.TOKEN
+                )
                 res.status(200).json({
                     message: "Successfully followed the user.",
-                    data: {
-                        userId: req.params.userId,
-                        name: user.name,
-                        profilePicture: user.profilePicture
-                    }
+                    token: token
                 });
             } else {
                 res.status(403).json("You already followed the user.");
@@ -134,13 +179,15 @@ router.put("/:userId/unfollow", async(req, res) => {
                         profilePicture: user.profilePicture
                     }}
                 });
+                const updatedUser = await User.findById(currentUser._id);
+                const token = jwt.sign({
+                    ...updatedUser
+                },
+                    process.env.TOKEN
+                )
                 res.status(200).json({
                     message: "Successfully unfollowed the user.",
-                    data: {
-                        userId: req.params.userId,
-                        name: user.name,
-                        profilePicture: user.profilePicture
-                    }
+                    token: token
                 });
             } else {
                 res.status(403).json("You haven't followed the user.");
