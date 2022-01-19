@@ -1,8 +1,7 @@
 import React from 'react';
-import Profile from '../components/Profile/Profile';
 
 import SideBar from "../components/SideBar/SideBar";
-import Timeline from "../components/Timeline/Timeline";
+import Profile from '../components/Profile/Profile';
 
 const ProfilePage = () => {
     // Landing Page
