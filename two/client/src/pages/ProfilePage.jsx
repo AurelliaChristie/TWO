@@ -1,12 +1,21 @@
-import React, {useContext} from 'react';
+import React, {useState, useEffect} from 'react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 
 import SideBar from "../components/SideBar/SideBar";
 import Profile from '../components/Profile/Profile';
 
-import { AuthContext } from '../contexts/AuthContext';
-
 const ProfilePage = () => {
-    const {user} = useContext(AuthContext);
+    const [user, setUser] = useState({});
+    const {userId} = useParams();
+
+    useEffect(() => {
+        const getUser = async ()  => {
+          const fetchUser = await axios.get(`http://localhost:8000/users/${userId}`);
+          setUser(fetchUser.data.data);
+        }
+        getUser();
+    }, [user])
 
     // Landing Page
     return(

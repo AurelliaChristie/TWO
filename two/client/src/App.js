@@ -8,20 +8,21 @@ import './App.css';
 
 const App = () => {
   
-  const { dispatch } = useContext(AuthContext)
+  const { dispatchUser } = useContext(AuthContext);
   const [validate, setValidate] = useState(false);
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    setValidate(false);
     if(token){
-      const getProfile = async(token) => {
+      const getProfile = async() => {
         try{
           const fetchProfile = await axios.get("http://localhost:8000/users", {
             headers: {
-              Authorization: `Bearer ${token}`
+              authorization: `Bearer ${token}`
             }
           })
-          dispatch({
+          dispatchUser({
             type: "LOGIN",
             user: fetchProfile.data.data
           })
@@ -30,8 +31,8 @@ const App = () => {
       }
     }
     getProfile();
-    setValidate(true);
   }
+    setValidate(true);
   }, [token])
 
   if(validate){
