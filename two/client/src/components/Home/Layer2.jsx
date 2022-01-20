@@ -7,7 +7,7 @@ import Help from "../../assets/Help.svg"
 function Layer2(){
     return(
         <div className="carousel" style={{backgroundColor: "#163fe486"}}>
-            <h1 style={{textAlign: "center", padding: "30px 0px 30px 0px", color: "#1640E4", fontWeight: "bold"}}>Our Main Features</h1>
+            <h1 style={{textAlign: "center", padding: "30px 0px 30px 0px", color: "#1640E4", fontWeight: "bold"}}>Benefits of Using This App</h1>
             <Carousel>
                 <Carousel.Item>
                     <img

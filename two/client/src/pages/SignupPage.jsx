@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 
 import { Container, Card, Row, Col, Form, Button } from 'react-bootstrap';
@@ -16,7 +14,7 @@ const SignupPage = () => {
     const [confpass, setConfPass] = useState("");
     
     const handleUsernameChange = (event) => {
-        setName(event.target.value);
+        setUsername(event.target.value);
     };
 
     const handleNameChange = (event) => {
@@ -49,16 +47,19 @@ const SignupPage = () => {
                 event.target.reset();
                 history("/login");
             } catch (error) {
-                window.alert(error.response.data);
-                event.target.reset();
-            }
-            
+                if(error.response.data.code === 11000){
+                    window.alert("Username or Email has been registered.");
+                } else{
+                    window.alert(error);
+                }
+                // event.target.reset();
+            }    
         }
         signup();
     };
 
     return (
-        <Container fluid>
+        <Container fluid className="pb-5">
             <Card className="py-5 p-3 my-3 mx-auto my-5 w-50 sl-card">
                 <Row className="p-2">
                     <Col>
@@ -71,11 +72,11 @@ const SignupPage = () => {
                         <Form id="form" onSubmit={(e) => handleSubmit(e)}>
                             <Form.Group className="mb-4">
                                 <Form.Label>Username</Form.Label>
-                                <Form.Control type="userName" placeholder="Type your username" onChange={(e) => handleUsernameChange(e)}/>                           
+                                <Form.Control type="text" placeholder="Type your username" onChange={(e) => handleUsernameChange(e)}/>                           
                             </Form.Group>
                             <Form.Group className="mb-4">
                                 <Form.Label>Full Name</Form.Label>
-                                <Form.Control type="fullName" placeholder="Type your full name" onChange={(e) => {handleNameChange(e)}}/>                           
+                                <Form.Control type="text" placeholder="Type your full name" onChange={(e) => {handleNameChange(e)}}/>                           
                             </Form.Group>
                             <Form.Group className="mb-4">
                                 <Form.Label>E-mail Address</Form.Label>
