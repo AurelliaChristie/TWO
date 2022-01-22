@@ -13,7 +13,7 @@ const Timeline = ({posts}) => {
       <div className="px-3 mb-4">
         <CreatePost user={user.loggedIn}/>
         {posts?.map((p) => (
-          <Post key={p._id} post={p} />
+          <Post key={p._id} post={p} currentUser={user.loggedIn}/>
         ))}
       </div>
     </div>
