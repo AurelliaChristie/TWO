@@ -22,28 +22,15 @@ router.get("/:postId", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    if(mongoose.Types.ObjectId.isValid(req.body.userId)){
-        try{
-            const user = await User.findById(req.body.userId);
-            if(!user){
-                res.status(400).json("User ID not found.");
-            } else {
-                try{
-                    const newPost = new Post(req.body);
-                    const savePost = await newPost.save();
-                    res.status(200).json({
-                        message: "Successfully create a post.",
-                        data: savePost
-                    });
-                } catch (error) {
-                    res.status(500).json(error);
-                }
-            }
-        } catch(error) {
-            res.status(500).json(error);
-        }
-    } else {
-        res.status(400).json("Invalid User ID.");
+    try{
+        const newPost = new Post(req.body);
+        const savePost = await newPost.save();
+        res.status(200).json({
+            message: "Successfully create a post.",
+            data: savePost
+        })         
+    } catch(error) {
+        res.status(500).json(error);
     }
 });
 

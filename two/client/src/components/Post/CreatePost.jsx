@@ -19,22 +19,22 @@ const CreatePost = ({ user }) => {
             userId: user._id,
             caption: caption.current.value
         };
-
+        console.log(newPost)
         if(file){
             const data = new FormData();
-            const fileName = Date.now() + file.name;
+            const fileName = `${Date.now()}_${user._id}_${file.name}`;
             data.append("name", fileName);
             data.append("file", file);
             newPost.image = fileName;
             try{
-                await axios.post("/upload", data);
+                await axios.post("http://localhost:8000/upload/post", data);
             } catch (error) {
                 console.log(error);
             }
         }
 
         try{
-            await axios.post("/posts", newPost);
+            await axios.post("http://localhost:8000/posts", newPost);
             window.location.reload();
         } catch(error) {
             console.log(error);
@@ -46,7 +46,15 @@ const CreatePost = ({ user }) => {
             <div className="bg-white border mt-2">
             <div className="d-flex flex-row justify-content-between align-items-center px-2 py-4">
               <div className="d-flex flex-row align-items-center px-2">
-                    <img className="rounded-circle me-2" src={Users.filter((u) => u._id === user?._id)[0]?.profilePicture ? Users.filter((u) => u._id === user?._id)[0]?.profilePicture : profile} width="45" alt="Profile"/>
+                    <img className="rounded-circle me-2" 
+                        src={
+                            user.profilePicture ?
+                            public_folder + user.profilePicture :
+                            profile
+                        } 
+                        width="45" 
+                        alt="Profile"
+                    />
                     <input
                         placeholder="What's on your mind?"
                         className="captionInput"
@@ -61,7 +69,7 @@ const CreatePost = ({ user }) => {
                     <FontAwesomeIcon icon="times-circle" className="cancelImage" size="lg" color="red" onClick={() => setFile(null)} />
                 </div>
             )}
-            <form on Submit = {submitHandler}>
+            <form onSubmit = {submitHandler}>
                 <div className="d-flex justify-content-start p-2 px-3 py-3">
                     <div style={{cursor: "pointer"}}>
                         <label htmlFor="file">

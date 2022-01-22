@@ -4,12 +4,13 @@ import axios from "axios";
 
 import profile from "../../assets/default_profile.jfif";
 
-import { Users } from "../../dummyData";
 import "./Post.css";
 
+
 const Post = ({ post }) => {
-  const public_folder = process.env.REACT_APP_PUBLIC_FOLDER;
-  
+  const public_folder_posts = process.env.REACT_APP_PUBLIC_FOLDER_POSTS;
+  const public_folder_profiles = process.env.REACT_APP_PUBLIC_FOLDER_PROFILES;
+
   const [like, setLike] = useState(post.likes ? post.likes.length : 0);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
@@ -62,7 +63,15 @@ const Post = ({ post }) => {
           <div>
             <div className="d-flex flex-row justify-content-between align-items-center p-2 border-bottom">
               <div className="d-flex flex-row align-items-centerpx-2">
-                    <img className="rounded-circle me-2" src={user?.profilePicture ? user?.profilePicture : profile} width="45" alt="Profile"/>
+                    <img className="rounded-circle me-2" 
+                      src={
+                        user?.profilePicture ? 
+                        public_folder_profiles + user.profilePicture : 
+                        profile
+                      } 
+                      width="45" 
+                      alt="Profile"
+                    />
                     <div className="d-flex flex-column flex-wrap ml-2">
                       <span className="font-weight-bold">{user?.name}</span>
                       <span className="text-black-50">{timeSince(post.createdAt)}</span></div>
@@ -70,7 +79,7 @@ const Post = ({ post }) => {
                   <div className="px-2"><FontAwesomeIcon icon="ellipsis-v"/></div>
             </div>
             <div className="p-2 px-3">
-              <img className="img-fluid img-responsive" src={public_folder + post.image} alt="Post"/>
+              <img className="img-fluid img-responsive" src={public_folder_posts + post.image} alt="Post"/>
             </div>
             <div className="p-2 px-3">
               <span>{post.caption}</span>
