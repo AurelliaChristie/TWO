@@ -11,7 +11,6 @@ const User = require("../models/User");
 const authenticateJWT = (req, res, next) => {
     // Take request authorization
     const authHeader = req.headers.authorization;
-
     if(authHeader){
         // Take token
         const token = authHeader.split(" ")[1];
@@ -32,12 +31,29 @@ const authenticateJWT = (req, res, next) => {
 }
 
 // Add routes
+// Log in authentication
 router.get("/", authenticateJWT, async(req, res) => {
     try{
         const user = await User.findOne({
             username: req.user.username
         });
-        const {password, updatedAt, __v, ...other} = user._doc;
+        const {password, createdAt, updatedAt, __v, ...other} = user._doc;
+        res.status(200).json({
+            message: "Successfully authenticate user.",
+            data: other
+        });
+    } catch (error){
+        res.status(500).json(error);
+    }
+});
+
+// Get Profile
+router.get("/:userId", async(req, res) => {
+    try{
+        const user = await User.findOne({
+            _id: req.params.userId
+        });
+        const {password, createdAt, updatedAt, __v, ...other} = user._doc;
         res.status(200).json({
             message: "Successfully get user profile.",
             data: other
@@ -47,6 +63,22 @@ router.get("/", authenticateJWT, async(req, res) => {
     }
 });
 
+// Get all user's names & profile pictures
+router.get("/:userId/all", async(req, res) => {
+    try{
+        const users = await User.find({
+            _id: { $ne: req.params.userId }
+        }).select("name profilePicture");
+        res.status(200).json({
+            message: "Successfully get user profile.",
+            data: users
+        });
+    } catch (error){
+        res.status(500).json(error);
+    }
+})
+
+// Edit profile
 router.put("/:userId", async(req, res) => {
     if(req.body.userId === req.params.userId){
         try{
@@ -71,6 +103,7 @@ router.put("/:userId", async(req, res) => {
     }
 });
 
+// Edit password
 router.put("/:userId/password", async(req, res) => {
     if(req.body.userId === req.params.userId){
         if(req.body.password === req.body.confirmPassword){
@@ -105,6 +138,7 @@ router.put("/:userId/password", async(req, res) => {
     }
 });
 
+// Delete user
 router.delete("/:userId", async(req, res) => {
     if(req.body.userId === req.params.userId || req.body.isAdmin){
         try{
@@ -115,100 +149,6 @@ router.delete("/:userId", async(req, res) => {
         }
     } else {
         return res.status(403).send("You can only delete your account!");
-    }
-});
-
-router.put("/:userId/follow", async(req, res) => {
-    if(req.body.userId !== req.params.id){
-        try{
-            const user = await User.findById(req.params.userId);
-            const currentUser = await User.findById(req.body.userId);
-            if(user.followers.filter(follower => follower.userId === req.body.userId).length === 0){
-                await user.updateOne({
-                    $push: {followers: {
-                        userId: req.body.userId,
-                        name: currentUser.name,
-                        profilePicture: currentUser.profilePicture
-                    }}
-                });
-                await currentUser.updateOne({
-                    $push: {followings: {
-                        userId: req.params.userId,
-                        name: user.name,
-                        profilePicture: user.profilePicture
-                    }}
-                });
-                const updatedUser = await User.findById(currentUser._id);
-                const token = jwt.sign({
-                    ...updatedUser
-                },
-                    process.env.TOKEN
-                )
-                res.status(200).json({
-                    message: "Successfully followed the user.",
-                    token: token
-                });
-            } else {
-                res.status(403).json("You already followed the user.");
-            }
-        } catch (error){
-            res.status(500).json(error);
-        }
-    } else {
-        res.status(403).json("You can't follow yourself!");
-    }
-});
-
-router.put("/:userId/unfollow", async(req, res) => {
-    if(req.body.userId !== req.params.id){
-        try{
-            const user = await User.findById(req.params.userId);
-            const currentUser = await User.findById(req.body.userId);
-            if(user.followers.filter(follower => follower.userId === req.body.userId).length > 0){
-                await user.updateOne({
-                    $pull: {followers: {
-                        userId: req.body.userId,
-                        name: currentUser.name,
-                        profilePicture: currentUser.profilePicture
-                    }}
-                });
-                await currentUser.updateOne({
-                    $pull: {followings: {
-                        userId: req.params.userId,
-                        name: user.name,
-                        profilePicture: user.profilePicture
-                    }}
-                });
-                const updatedUser = await User.findById(currentUser._id);
-                const token = jwt.sign({
-                    ...updatedUser
-                },
-                    process.env.TOKEN
-                )
-                res.status(200).json({
-                    message: "Successfully unfollowed the user.",
-                    token: token
-                });
-            } else {
-                res.status(403).json("You haven't followed the user.");
-            }
-        } catch (error){
-            res.status(500).json(error);
-        }
-    } else {
-        res.status(403).json("You can't follow yourself!");
-    }
-});
-
-router.get("/:userId/follow", async (req, res) => {
-    try{
-        const user = await User.findById(req.params.userId);
-        res.status(200).json({
-            message: "Successfully get the user's friends.",
-            data: user.followings
-        });
-    } catch (error){
-        res.status(500).json(error);
     }
 });
 

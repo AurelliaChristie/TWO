@@ -11,7 +11,7 @@ const Timeline = ({posts}) => {
   return (
     <div className="feed mb-4">
       <div className="px-3 mb-4">
-        <CreatePost user={user._id}/>
+        <CreatePost user={user.loggedIn}/>
         {posts?.map((p) => (
           <Post key={p._id} post={p} />
         ))}

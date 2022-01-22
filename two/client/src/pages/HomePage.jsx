@@ -10,7 +10,6 @@ import { AuthContext } from "../contexts/AuthContext";
 const HomePage = () => {
     const { user } = useContext(AuthContext);
     const currentUser = user.loggedIn;
-
     const [login, setLogin] = useState(false);
     const [posts, setPosts] = useState([]);
 
@@ -22,8 +21,8 @@ const HomePage = () => {
 
     useEffect(() => {
         const getPosts = async ()  => {
-          const fetchPosts = await axios.get(`http://localhost:8000/posts/timeline/${currentUser._id}`);
-          setPosts(fetchPosts.data.data);
+            const fetchPosts = await axios.get(`http://localhost:8000/posts/timeline/${currentUser._id}`);
+            setPosts(fetchPosts.data.data);
         }
         getPosts();
     }, [user])

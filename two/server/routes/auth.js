@@ -25,7 +25,7 @@ router.post("/signup", async (req, res) => {
                 data: saveUser
             });
         } catch(error) {
-            res.status(500).send(error.response.data);
+            res.status(500).json(error);
         }
     } else {
         return res.status(400).send("Password and password confirmation contain different values.");

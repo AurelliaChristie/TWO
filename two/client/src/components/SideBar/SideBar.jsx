@@ -31,8 +31,8 @@ const SideBar = () => {
           </li>
           <ul className="sidebarUserList">
             {Users.map((user) => (
-              <Link to={`/dm/${user._id}`} className="text-decoration-none text-white">
-                <User key={user._id} user={user}/>
+              <Link to={`/dm/${user._id}`} className="text-decoration-none text-white"  key={user._id}>
+                <User user={user}/>
               </Link>
             ))}
           </ul>

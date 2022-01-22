@@ -3,7 +3,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const helmet = require("helmet");
 const morgan = require("morgan");
-const multer = require("multer");
 const dotenv = require("dotenv");
 const cors = require("cors");
 
@@ -13,6 +12,9 @@ const path = require("path");
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
+const conversationRoute = require("./routes/conversations");
+const messageRoute = require("./routes/messages");
+const uploadRoute = require("./routes/upload");
 
 // Initiate app
 const app = express();
@@ -26,7 +28,9 @@ mongoose.connect(process.env.MONGO_URL, {
 });
 
 // Add static
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+app.use("/images/posts", express.static(path.join(__dirname, "./public/images/posts")));
+app.use("/images/covers", express.static(path.join(__dirname, "./public/images/covers")));
+app.use("/images/profiles", express.static(path.join(__dirname, "./public/images/profiles")));
 
 // Add middleware
 app.use(express.json()); //body parser
@@ -34,29 +38,13 @@ app.use(helmet()); //security related HTTP response headers
 app.use(morgan("common")); //simplifies logging request to the app
 app.use(cors());
 
-// Set upload 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "public/images");
-    },
-    filename: (req, file, cb) => {
-        cn(null, req.body.name);
-    }
-});
-
-const upload = multer({ storage: storage});
-
-// Add routes
-app.post("/upload", upload.single("file"), (req, res) => {
-    try{
-        return res.status(200).json("File uploaded successfully");
-    } catch (error) {
-        console.log(error);
-    }
-});
+//  Add routes
 app.use("/users", userRoute);
 app.use("/auth", authRoute);
 app.use("/posts", postRoute);
+app.use("/conversations", conversationRoute);
+app.use("/messages", messageRoute);
+app.use("/upload", uploadRoute);
 
 // Start server
 const PORT = process.env.PORT || 8000;
