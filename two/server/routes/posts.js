@@ -8,6 +8,7 @@ const Post = require("../models/Post");
 const User = require("../models/User");
 
 // Add routes
+// Get post detail
 router.get("/:postId", async (req, res) => {
     try{
         const post = await Post.findById(req.params.postId);
@@ -21,6 +22,7 @@ router.get("/:postId", async (req, res) => {
     }
 });
 
+// Create new post
 router.post("/", async (req, res) => {
     try{
         const newPost = new Post(req.body);
@@ -34,6 +36,7 @@ router.post("/", async (req, res) => {
     }
 });
 
+// Edit post
 router.put("/:postId", async (req, res) => {
     try{
         const post = await Post.findById(req.params.postId);
@@ -50,15 +53,17 @@ router.put("/:postId", async (req, res) => {
     }
 });
 
+// Like or unlike post
 router.put("/:postId/like", async (req, res) => {
     try{
         const post = await Post.findById(req.params.postId);
-        const currentUser = await User.findById(req.body.userId);
-        if(post.likes.filter(like => like.userId === req.body.userId).length === 0){
+        const currentUser = req.body.user;
+        if(post.likes.filter(like => like.userId === currentUser._id).length === 0){
             await post.updateOne({
                 $push: {likes: {
-                    userId: req.body.userId,
+                    userId: currentUser._id,
                     name: currentUser.name,
+                    profilePicture: currentUser.profilePicture
                 }}
             });
             res.status(200).json({
@@ -72,8 +77,9 @@ router.put("/:postId/like", async (req, res) => {
         } else {
             await post.updateOne({
                 $pull: {likes: {
-                    userId: req.body.userId,
+                    userId: currentUser._id,
                     name: currentUser.name,
+                    profilePicture: currentUser.profilePicture
                 }}
             });
             res.status(200).json({
@@ -90,6 +96,7 @@ router.put("/:postId/like", async (req, res) => {
     }
 });
 
+// Delete post
 router.delete("/:postId", async (req, res) => {
     try{
         const post = await Post.findById(req.params.postId);
@@ -104,6 +111,7 @@ router.delete("/:postId", async (req, res) => {
     }
 });
 
+// Get timeline posts
 router.get("/timeline/:userId", async(req, res) => {
     try{
         const currentUser = await User.findById(req.params.userId);
@@ -145,6 +153,7 @@ router.get("/timeline/:userId", async(req, res) => {
     }
 })
 
+// Get certain user post
 router.get("/profile/:userId", async(req, res) => {
     try{
         const user = await User.findById(req.params.userId);

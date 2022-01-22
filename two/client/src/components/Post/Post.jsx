@@ -7,11 +7,11 @@ import profile from "../../assets/default_profile.jfif";
 import "./Post.css";
 
 
-const Post = ({ post }) => {
+const Post = ({ post, currentUser }) => {
   const public_folder_posts = process.env.REACT_APP_PUBLIC_FOLDER_POSTS;
   const public_folder_profiles = process.env.REACT_APP_PUBLIC_FOLDER_PROFILES;
 
-  const [like, setLike] = useState(post.likes ? post.likes.length : 0);
+  const [like, setLike] = useState(post.likes.length > 0 ? post.likes.length : 0);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
 
@@ -21,11 +21,24 @@ const Post = ({ post }) => {
       setUser(res.data.data);
     };
     fetchUser();
-  }, [post.userId]);
 
-  const likeHandler =()=>{
+    if(post.likes.filter(like => like.userId === currentUser._id).length !== 0){
+      setIsLiked(true);
+    }
+  }, [post]);
+
+  const likeHandler = () => {
     setLike(isLiked ? like-1 : like+1);
     setIsLiked(!isLiked);
+    const likePost = async () => {
+      try{
+        const postLike = { "user": currentUser };
+        await axios.put(`http://localhost:8000/posts/${post._id}/like`, postLike);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    likePost();
   };
 
   const timeSince = (date) => {
