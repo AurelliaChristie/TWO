@@ -9,12 +9,13 @@
   flex-direction: column;
   justify-content: space-between;
   position: relative;
-  padding-left: 10px;
-  padding-right: 10px;
+  width: 100%;
 }
 
 .chatBoxTop {
   overflow-y: scroll;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .chatBoxBottom {
