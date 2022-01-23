@@ -1,14 +1,45 @@
 import React from 'react';
 import "./Chat.css";
+import profile from "../../assets/default_profile.jfif";
 
-const Chat = ({mine}) => {
+const timeSince = (date) => {
+
+  let seconds = Math.floor((Date.now() - new Date(date)) / 1000);
+
+  let interval = seconds / 31536000;
+
+  if (interval > 1) {
+    return Math.floor(interval) + " years ago";
+  }
+  interval = seconds / 2592000;
+  if (interval > 1) {
+    return Math.floor(interval) + " months ago";
+  }
+  interval = seconds / 86400;
+  if (interval > 1) {
+    return Math.floor(interval) + " days ago";
+  }
+  interval = seconds / 3600;
+  if (interval > 1) {
+    return Math.floor(interval) + " hours ago";
+  }
+  interval = seconds / 60;
+  if (interval > 1) {
+    return Math.floor(interval) + " minutes ago";
+  }
+  return Math.floor(seconds) + " seconds ago";
+};
+
+const Chat = ({chat, mine, friend}) => {
+  const public_folder_profile = process.env.REACT_PUBLIC_FOLDER_PROFILES;
+
   return (
   <div className={mine ? "chat mine": "chat"}>
       <div className="chatTop">
-          <img src="https://pbs.twimg.com/media/D8Dp0c5WkAAkvME.jpg" alt="" className="chatImg"/>
-          <p className="chatText">Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident nam placeat quae earum, adipisci obcaecati fugiat iusto. Iure eligendi fugit accusamus error, itaque nesciunt quasi quisquam odio natus velit illum.</p>
+          <img src={friend ? public_folder_profile + friend : profile} alt="" className="chatImg"/>
+          <p className="chatText">{chat.text}</p>
       </div>
-      <div className='chatBottom'>1 hour ago</div>
+      <div className='chatBottom'>{timeSince(chat.createdAt)}</div>
   </div>
   )
 };
