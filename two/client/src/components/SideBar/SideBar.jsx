@@ -10,10 +10,9 @@ import profile from "../../assets/default_profile.jfif";
 
 import "./SideBar.css";
 
-const SideBar = () => {
+const SideBar = ({onlineUsers}) => {
   const public_folder = process.env.REACT_APP_PUBLIC_FOLDER;
 
-  const [conversations, setConversations] = useState([]);
   const [allProfiles, setAllProfiles] = useState([]);
 
   const { user } = useContext(AuthContext);
@@ -28,29 +27,6 @@ const SideBar = () => {
       }
     }
     getAllProfile();
-
-    // const getUserConversations = async () => {
-    //   try{
-    //     const conversations = await axios.get(`http://localhost:8000/conversations/${user.loggedIn._id}`);
-    //     setConversations(conversations.data);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
-    // getUserConversations();
-
-    // const getOldConv = () => {
-    //   conversations.map((conv) => 
-    //     setOldConv(
-    //       oldConv.append(
-    //         conv.members.find(
-    //           (member) => member !== user.loggedIn._id
-    //         )
-    //       )
-    //     )
-    //   )        
-    // };
-    // getOldConv();
 
   }, [user.loggedIn._id]);
 
@@ -74,9 +50,10 @@ const SideBar = () => {
           </li>
           <ul className="sidebarUserList">
             {allProfiles?.map((profile) => {
+                let online = onlineUsers?.filter((user) => user.userId === profile._id);
                   return(
                     <Link to={`/chat/${profile._id}`} className="text-decoration-none text-white"  key={profile._id}>
-                      <User user={profile}/>
+                      <User user={profile} online={online?.length > 0 ? true: false}/>
                     </Link>
                   )
                 } 
