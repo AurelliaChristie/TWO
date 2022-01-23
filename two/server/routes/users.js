@@ -63,7 +63,7 @@ router.get("/:userId", async(req, res) => {
     }
 });
 
-// Get all user's names & profile pictures
+// Get other user's names & profile pictures
 router.get("/:userId/all", async(req, res) => {
     try{
         const users = await User.find({

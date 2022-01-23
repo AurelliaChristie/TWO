@@ -18,11 +18,11 @@ router.post("/", async(req, res) => {
     }
 });
 
-// Get Conversation of Certain User
-router.get("/:userId", async (req, res) => {
+// Get Conversation of 2 people
+router.get("/:userId/:friendId", async (req, res) => {
     try{
-        const conversation = await Conversation.find({
-            members: { $in: [req.params.userId]}
+        const conversation = await Conversation.findOne({
+            members: { $all: [req.params.userId, req.params.friendId]}
         });
         res.status(200).json(conversation);
     } catch (error) {

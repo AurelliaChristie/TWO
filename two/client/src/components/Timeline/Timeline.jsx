@@ -9,13 +9,15 @@ const Timeline = ({posts}) => {
   const {user} = useContext(AuthContext);
   
   return (
-    <div className="feed mb-4">
-      <div className="px-3 mb-4">
-        <CreatePost user={user.loggedIn}/>
-        {posts?.map((p) => (
-          <Post key={p._id} post={p} currentUser={user.loggedIn}/>
-        ))}
-      </div>
+    <div className='feed'>
+        <div className="feedWrapper">
+            <div className="feedPosts pb-5 mb-4">
+              <CreatePost user={user.loggedIn}/>
+              {posts?.map((p) => (
+                <Post key={p._id} post={p} currentUser={user.loggedIn}/>
+              ))}
+            </div>
+        </div>
     </div>
   );
 };

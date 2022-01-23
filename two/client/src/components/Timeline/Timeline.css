@@ -1,3 +1,18 @@
 .feed {
+  height: calc(100vh - 70px);
+  display: flex;
   flex: 9;
+}
+
+.feedWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+
+.feedPosts {
+  overflow-y: scroll;
+  padding-left: 10px;
+  padding-right: 10px;
 }

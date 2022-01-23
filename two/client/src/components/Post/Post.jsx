@@ -75,7 +75,7 @@ const Post = ({ post, currentUser }) => {
         <div className="bg-white border mt-2">
           <div>
             <div className="d-flex flex-row justify-content-between align-items-center p-2 border-bottom">
-              <div className="d-flex flex-row align-items-centerpx-2">
+              <div className="d-flex flex-row align-items-center px-2">
                     <img className="rounded-circle me-2" 
                       src={
                         user?.profilePicture ? 

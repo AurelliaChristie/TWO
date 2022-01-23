@@ -1,7 +1,7 @@
 import React from 'react';
 import "./Chat.css";
 
-export default function Chat({mine}) {
+const Chat = ({mine}) => {
   return (
   <div className={mine ? "chat mine": "chat"}>
       <div className="chatTop">
@@ -10,5 +10,7 @@ export default function Chat({mine}) {
       </div>
       <div className='chatBottom'>1 hour ago</div>
   </div>
-  );
-}
+  )
+};
+
+export default Chat;

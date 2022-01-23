@@ -8,14 +8,14 @@ import LoginPage from '../pages/LoginPage';
 import SignupPage from '../pages/SignupPage';
 import ProfilePage from '../pages/ProfilePage';
 import EditProfilePage from '../pages/EditProfile';
-import Conversation from '../pages/Conversation/Conversation';
+import ConversationPage from '../pages/ConversationPage/ConversationPage';
 
 const MainRouter = () => {
     return (
         <Router>
             <NavBar/>
             <Routes>
-                <Route path='/chat' element={<Conversation/>} exact/>
+                <Route path='/chat/:friendId' element={<ConversationPage/>} exact/>
                 <Route path='/profile/edit' element={<EditProfilePage/>} exact/>
                 <Route path='/profile/:userId' element={<ProfilePage/>} exact/>
                 <Route path='/login' element={<LoginPage/>} exact/>
