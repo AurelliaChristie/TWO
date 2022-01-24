@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import {io} from "socket.io-client";
 
 import SideBar from '../../components/SideBar/SideBar';
 import RoomName from '../../components/Chat/RoomName';
@@ -9,6 +8,7 @@ import Chat from '../../components/Chat/Chat';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { AuthContext } from '../../contexts/AuthContext';
+import { SocketContext } from '../../contexts/SocketContext';
 
 import "./ConversationPage.css";
 
@@ -19,42 +19,36 @@ const ConversationPage = () => {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [friend, setFriend] = useState({});
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [sockets, setSockets] = useState(null);
   const { friendId } = useParams();
   const { user } = useContext(AuthContext);
+  const { socket } = useContext(SocketContext);
   const scrollRef = useRef();
 
-  // Create connection to socket - ws: web socket
-  const socket = useRef();
   useEffect(() => {
-    socket.current = io("ws://localhost:5000");
-    
-    // Get arrival message
-    socket.current.on("getDirectMessage", (data) => {
-      setArrivalMessage({
-        conversationId: convId,
-        sender: data.senderId,
-        text: data.text,
-        createdAt: Date.now()
+    if(socket !== null){
+        setOnlineUsers(socket?.onlineUsers)
+        setSockets(socket?.socket)
+        console.log(socket)
+    }
+}, [socket])
+
+  useEffect(() => {
+      // Get arrival message
+      sockets?.on("getDirectMessage", (data) => {
+        setArrivalMessage({
+          conversationId: convId,
+          sender: data.senderId,
+          text: data.text,
+          createdAt: Date.now()
+        });
       });
-    });
-    console.log(arrivalMessage)
   }, []);
 
   useEffect(() => {
     arrivalMessage && friendId === arrivalMessage?.sender && 
       setMessages(prev => [...prev, arrivalMessage]);
   }, [arrivalMessage, friendId])
-
-  useEffect(() => {
-    // Send current user ID
-    socket.current.emit("sendUserId", user.loggedIn._id);
-
-    // Get online users
-    socket.current.on("getOnlineUsers", users => {
-      setOnlineUsers(users);
-    })
-  }, [user]);
-  
 
   useEffect(() => {
     const getFriendProfile = async() => {
@@ -133,8 +127,8 @@ const ConversationPage = () => {
       receiverId: friendId,
       text: newMessage
     };
-    console.log(a)
-    socket.current.emit("sendDirectMessage", a);
+    console.log(sockets)
+    sockets?.emit("sendDirectMessage", a);
 
     try{
       const res = await axios.post("http://localhost:8000/messages/", message);

@@ -27,8 +27,7 @@ const SideBar = ({onlineUsers}) => {
       }
     }
     getAllProfile();
-
-  }, [user.loggedIn._id]);
+  }, [user]);
 
   return(
     <div className="sidebar">

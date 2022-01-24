@@ -37,6 +37,7 @@ io.on("connection", (socket) => {
         addUser(userId, socket.id);
         // Send online users to everyone
         io.emit("getOnlineUsers", users);
+        console.log("sendUserId")
     });
 
     // Send & get direct message
