@@ -71,7 +71,7 @@ const NavBar = () => {
                             </Link>
                         </Nav>
                         <Nav>
-                            <Link to="/profile" className="text-black text-decoration-none mx-2 d-inline">
+                            <Link to={`/profile/${user.loggedIn._id}`} className="text-black text-decoration-none mx-2 d-inline">
                                 <FontAwesomeIcon icon="user-circle" className="mx-2 my-auto" size="lg"/>
                                 Profile
                             </Link>
