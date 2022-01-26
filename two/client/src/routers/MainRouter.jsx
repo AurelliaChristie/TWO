@@ -9,12 +9,14 @@ import SignupPage from '../pages/SignupPage';
 import ProfilePage from '../pages/ProfilePage';
 import EditProfilePage from '../pages/EditProfile';
 import ConversationPage from '../pages/ConversationPage/ConversationPage';
+import ChannelPage from '../pages/ChannelPage/ChannelPage';
 
 const MainRouter = () => {
     return (
         <Router>
             <NavBar/>
             <Routes>
+                <Route path='/chat/channels/:channelId' element={<ChannelPage/>} exact/>
                 <Route path='/chat/:friendId' element={<ConversationPage/>} exact/>
                 <Route path='/profile/edit' element={<EditProfilePage/>} exact/>
                 <Route path='/profile/:userId' element={<ProfilePage/>} exact/>

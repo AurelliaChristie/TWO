@@ -143,6 +143,48 @@ io.on("connection", (socket) => {
         }
     });
 
+    // Join channel
+    socket.on("joinChannel", async({channelId, channelName, userId}) => {
+        socket.join(channelName);
+    
+        try{
+            const conv = await Conversation.findById(channelId);
+            if(conv.members?.filter(member => member === userId)?.length === 0){
+                try{
+                    const updatedChannel = await Conversation.findByIdAndUpdate(
+                        channelId,
+                        {$push: {members: userId}},
+                        {new: true}            
+                    );
+                    socket.to(channelName).emit("updatedChannelMembers", updatedChannel);
+                } catch (error) {
+                    res.status(500).json(error);
+                }
+            }
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    })
+
+    // Send & get channel message
+    socket.on("sendChannelMessage", async ({sender, text, channelName, conversationId}) => {
+        const newMessage = new Message({
+            conversationId: conversationId,
+            sender: sender,
+            text: text
+        });
+        
+        try{
+            const savedMessage = await newMessage.save();
+            const updatedMessages = await Message.find({
+                conversationId: conversationId
+            });
+            io.to(channelName).emit("getChannelMessage", updatedMessages);
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    });
+
     // A user disconnect
     socket.on("disconnect", () =>{
         console.log("A user disconnected.");
