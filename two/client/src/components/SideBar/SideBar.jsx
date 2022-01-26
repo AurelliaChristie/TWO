@@ -26,6 +26,11 @@ const SideBar = () => {
     //   setOnlineUsers(data)
     // });
     // console.log(onlineUsers)
+
+    user.socket?.on("updatedChannelList", (data) => {
+      setAllChannels(data)
+    });
+
     const getAllChannels = async () => {
       try{
         const channels = await axios.get(`http://localhost:8000/conversations/channels`);

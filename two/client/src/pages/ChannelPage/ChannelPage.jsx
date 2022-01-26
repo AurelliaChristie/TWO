@@ -26,6 +26,7 @@ const ChannelPage = () => {
       user.socket?.on("getChannelMessage", (data) => {
         setArrivalMessage(data)
       })
+
   }, []);
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const ChannelPage = () => {
         const fetchConv = await axios.get(`http://localhost:8000/conversations/channels/${channelId}`);
         
         setConv(fetchConv.data);
-        console.log(conv)
         user.socket?.emit("joinChannel", {
             channelId: channelId,
             channelName: fetchConv?.data.name,

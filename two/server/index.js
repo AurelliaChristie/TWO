@@ -107,9 +107,13 @@ io.on("connection", (socket) => {
 
             try{
                 const savedConversation = await newConversation.save();
+                const updatedChannelList = await Conversation.find({
+                    name:   {"$exists" : true, "$ne" : ""}
+                });
                 callback({
                     conversationId: savedConversation._id
                 });
+                io.emit("updatedChannelList", updatedChannelList);
             } catch (error) {
                 res.status(500).json(error);
             }
