@@ -9,7 +9,6 @@ import "./AddChannel.css";
 
 const AddChannel = () => {
     const navigate = useNavigate();
-    const [convId, setConvId] = useState("");
     const [channel, setChannel] = useState("");
     const { user } = useContext(AuthContext);
     const handleChannelChange = (e) => {
@@ -22,7 +21,6 @@ const AddChannel = () => {
             name: channel,
             senderId: user.loggedIn?._id
         }, function(response){
-            setConvId(response.conversationId);
             navigate(`/chat/channels/${response.conversationId}`, {replace: true});
         
             setChannel("");

@@ -121,7 +121,7 @@ const ConversationPage = () => {
                   {
                     messages?.map((m) => (
                       <div ref={scrollRef}  key={m._id}>
-                      <Chat chat={m} mine={m.sender === user.loggedIn._id} friend={friend.profilePicture}/>
+                      <Chat chat={m} mine={m.sender === user.loggedIn._id} friend={m.sender === user.loggedIn._id ? user.loggedIn.profilePicture : friend.profilePicture}/>
                       </div>
                     ))
                   }
