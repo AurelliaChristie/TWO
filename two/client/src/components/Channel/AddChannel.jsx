@@ -32,7 +32,7 @@ const AddChannel = () => {
                 <Form.Control type="text" placeholder="New Channel"  onChange={(e) => handleChannelChange(e)} value={channel}/>
             </span>
             <div className="addChannelImageContainer">
-                <button className="btn btn-dark btn-md" type="submit" onClick={handleSubmit}><FontAwesomeIcon icon="plus"/></button>
+                <button className="btn btn-secondary btn-md" type="submit" onClick={handleSubmit}><FontAwesomeIcon icon="plus"/></button>
             </div>
         </li>
     )
