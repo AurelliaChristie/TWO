@@ -14,11 +14,11 @@ import { faUserCircle, faUsers, faBell, faEllipsisV, faHeart, faImages, faTimesC
 library.add(faUserCircle, faUsers, faBell, faEllipsisV, faHeart, faImages, faTimesCircle, faRss, faBars, faComment, faAngleDown, faAngleUp, faLaugh );
 
 const ContextProvider = () => {
-  const [user, dispatchUser] = useReducer(AuthReducer, {loggedIn: null});
+  const [user, dispatchUser] = useReducer(AuthReducer, {loggedIn: null, socket: null});
 
   return(
     <AuthContext.Provider value = {{user, dispatchUser}}>
-      <App />
+        <App />
     </AuthContext.Provider>
   )
 }

@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import {io} from "socket.io-client";
 
 import SideBar from '../../components/SideBar/SideBar';
 import RoomName from '../../components/Chat/RoomName';
 import Chat from '../../components/Chat/Chat';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { AuthContext } from '../../contexts/AuthContext';
 
@@ -22,39 +20,13 @@ const ConversationPage = () => {
   const { friendId } = useParams();
   const { user } = useContext(AuthContext);
   const scrollRef = useRef();
-
-  // Create connection to socket - ws: web socket
-  const socket = useRef();
-  useEffect(() => {
-    socket.current = io("ws://localhost:5000");
-    
-    // Get arrival message
-    socket.current.on("getDirectMessage", (data) => {
-      setArrivalMessage({
-        conversationId: convId,
-        sender: data.senderId,
-        text: data.text,
-        createdAt: Date.now()
-      });
-    });
-    console.log(arrivalMessage)
-  }, []);
-
-  useEffect(() => {
-    arrivalMessage && friendId === arrivalMessage?.sender && 
-      setMessages(prev => [...prev, arrivalMessage]);
-  }, [arrivalMessage, friendId])
-
-  useEffect(() => {
-    // Send current user ID
-    socket.current.emit("sendUserId", user.loggedIn._id);
-
-    // Get online users
-    socket.current.on("getOnlineUsers", users => {
-      setOnlineUsers(users);
-    })
-  }, [user]);
   
+  useEffect(() => {
+      // Get arrival message
+      user.socket?.on("getDirectMessage", (data) => {
+        setArrivalMessage(data)
+      })
+  }, []);
 
   useEffect(() => {
     const getFriendProfile = async() => {
@@ -69,18 +41,16 @@ const ConversationPage = () => {
 
     const getConversationId = async() => {
       try{
-        const fetchConv = await axios.get(`http://localhost:8000/conversations/${user.loggedIn._id}/${friendId}`);
-
+        const fetchConv = await axios.get(`http://localhost:8000/conversations/${user?.loggedIn?._id}/${friendId}`);
+        
         if(fetchConv.data === null){
-          try{
-            const createConv = await axios.post(`http://localhost:8000/conversations`, {
-              senderId: user.loggedIn._id,
-              receiverId: friendId
-            });
-            setConvId(createConv?.data._id);
-          } catch(error) {
-            console.log(error)
-          }
+          user.socket?.emit("createConversation", {
+            name: "",
+            senderId: user.loggedIn?._id,
+            receiverId: friendId
+          }, function(response){
+            setConvId(response.conversationId);
+          })
         } else {
           setConvId(fetchConv.data._id);
         }
@@ -90,6 +60,13 @@ const ConversationPage = () => {
     }
     getConversationId();
   }, [user, friendId]);
+
+  useEffect(() => {
+    if(arrivalMessage && convId === arrivalMessage[0]?.conversationId === true){
+      console.log(true)
+      setMessages(arrivalMessage);
+    }
+  }, [arrivalMessage, convId])
 
   useEffect(() => {
     const getMessages = async () => {
@@ -123,31 +100,19 @@ const ConversationPage = () => {
 
     const message = {
       sender: user.loggedIn._id,
+      receiver: friendId, 
       text: newMessage,
       conversationId: convId
     };
 
     // Send message to the receiver using socket
-    const a = {
-      senderId: user.loggedIn._id,
-      receiverId: friendId,
-      text: newMessage
-    };
-    console.log(a)
-    socket.current.emit("sendDirectMessage", a);
-
-    try{
-      const res = await axios.post("http://localhost:8000/messages/", message);
-      setMessages([...messages, res.data]);
-      setNewMessage("");
-    } catch (error) {
-      console.log(error);
-    }
+    user.socket.emit("sendDirectMessage", message);
+    setNewMessage("");
   };
 
   return (
       <div className='homeContainer'>
-        <SideBar onlineUsers={onlineUsers}/>
+        <SideBar/>
         <div className='conversation'>
             <div className="chatBoxWrapper">
                 <div>
