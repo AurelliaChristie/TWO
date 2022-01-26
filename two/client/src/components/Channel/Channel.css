@@ -1,0 +1,11 @@
+.channelList {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  margin-left: 10px;
+}
+
+.channelImageContainer {
+  position: relative;
+  margin-right: 20px;
+}
