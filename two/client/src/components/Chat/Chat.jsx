@@ -30,18 +30,33 @@ const timeSince = (date) => {
   return "just now";
 };
 
-const Chat = ({chat, mine, friend}) => {
+const Chat = ({chat, mine, friend, name}) => {
   const public_folder_profile = process.env.REACT_PUBLIC_FOLDER_PROFILES;
 
-  return (
-  <div className={mine ? "chat mine": "chat"}>
-      <div className="chatTop">
-          <img src={friend ? public_folder_profile + friend : profile} alt="" className="chatImg"/>
-          <p className="chatText">{chat.text}</p>
+  if(!name){
+    return (
+    <div className={mine ? "chat mine": "chat"}>
+        <div className="chatTop">
+            <img src={friend ? public_folder_profile + friend : profile} alt="" className="chatImg"/>
+            <p className="chatText">{chat.text}</p>
+        </div>
+        <div className='chatBottom'>{timeSince(chat.createdAt)}</div>
+    </div>
+    )
+  } else {
+    return (
+      <div className={mine ? "chat mine": "chat"}>
+          <div className="chatTop">
+              <img src={friend ? public_folder_profile + friend : profile} alt="" className="chatImg"/>
+              <div>
+                <div>{name}</div>
+                <p className="chatText">{chat.text}</p>
+              </div>
+          </div>
+          <div className='chatBottom'>{timeSince(chat.createdAt)}</div>
       </div>
-      <div className='chatBottom'>{timeSince(chat.createdAt)}</div>
-  </div>
-  )
+      )
+  }
 };
 
 export default Chat;

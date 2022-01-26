@@ -26,6 +26,11 @@ const SideBar = () => {
     //   setOnlineUsers(data)
     // });
     // console.log(onlineUsers)
+
+    user.socket?.on("updatedChannelList", (data) => {
+      setAllChannels(data)
+    });
+
     const getAllChannels = async () => {
       try{
         const channels = await axios.get(`http://localhost:8000/conversations/channels`);
@@ -67,7 +72,7 @@ const SideBar = () => {
           <ul className="sidebarUserList">
             {allChannels?.map((channel) => {
                 return(
-                  <Link to={`/chat/${channel._id}?channel=true`} className="text-decoration-none text-white"  key={channel._id}>
+                  <Link to={`/chat/channels/${channel._id}`} className="text-decoration-none text-white"  key={channel._id}>
                     <Channel channel={channel}/>
                   </Link>
                 )

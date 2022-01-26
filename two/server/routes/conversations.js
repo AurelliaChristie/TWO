@@ -59,11 +59,9 @@ router.get("/channels", async (req, res) => {
 })
 
 // Get Channel 
-router.get("/channels/:channelName", async (req, res) => {
+router.get("/channels/:channelId", async (req, res) => {
     try{
-        const conversation = await Conversation.findOne({
-            name: req.params.channelName
-        });
+        const conversation = await Conversation.findById(req.params.channelId);
         res.status(200).json(conversation);
     } catch (error) {
         res.status(500).json(error);
@@ -71,10 +69,10 @@ router.get("/channels/:channelName", async (req, res) => {
 })
 
 // Join Channel
-router.put("/:channelName/:userId", async (req, res) => {
+router.put("/channels/:channelId/:userId", async (req, res) => {
     try{
         const conversation = await Conversation.findOneAndUpdate(
-            {name: req.params.channelName},
+            {_id: req.params.channelId},
             {$push: {members: req.params.userId}},
             {new: true}
         );
@@ -85,10 +83,10 @@ router.put("/:channelName/:userId", async (req, res) => {
 })
 
 // Leave Channel
-router.put("/:channelName/:userId", async (req, res) => {
+router.put("/channels/:channelId/:userId", async (req, res) => {
     try{
         const conversation = await Conversation.findOneAndUpdate(
-            {name: req.params.channelName},
+            {_id: req.params.channelId},
             {$pull: {members: req.params.userId}},
             {new: true}
         );
@@ -99,10 +97,10 @@ router.put("/:channelName/:userId", async (req, res) => {
 })
 
 // Leave Channel
-router.put("/:channelName/:userId", async (req, res) => {
+router.put("/channels/:channelId/:userId", async (req, res) => {
     try{
         const conversation = await Conversation.findOneAndUpdate(
-            {name: req.params.channelName},
+            {_id: req.params.channelId},
             {$pull: {members: req.params.userId}},
             {new: true}
         );

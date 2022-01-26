@@ -8,78 +8,75 @@ import Chat from '../../components/Chat/Chat';
 
 import { AuthContext } from '../../contexts/AuthContext';
 
-import "./ConversationPage.css";
+import "./ChannelPage.css";
 
-const ConversationPage = () => {
-  const [convId, setConvId] = useState("");
+const ChannelPage = () => {
+  const [conv, setConv] = useState({});
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [arrivalMessage, setArrivalMessage] = useState(null);
-  const [friend, setFriend] = useState({});
+  const [members, setMembers] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
-  const { friendId } = useParams();
+  const { channelId } = useParams();
   const { user } = useContext(AuthContext);
   const scrollRef = useRef();
   
   useEffect(() => {
       // Get arrival message
-      user.socket?.on("getDirectMessage", (data) => {
+      user.socket?.on("getChannelMessage", (data) => {
         setArrivalMessage(data)
       })
+
   }, []);
 
   useEffect(() => {
-    const getFriendProfile = async() => {
+    const getConversationData = async() => {
       try{
-        const fetchProfile = await axios.get(`http://localhost:8000/users/${friendId}`);
-        setFriend(fetchProfile.data.data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    getFriendProfile();
-
-    const getConversationId = async() => {
-      try{
-        const fetchConv = await axios.get(`http://localhost:8000/conversations/dm/${user?.loggedIn?._id}/${friendId}`);
+        const fetchConv = await axios.get(`http://localhost:8000/conversations/channels/${channelId}`);
         
-        if(fetchConv.data === null){
-          user.socket?.emit("createConversation", {
-            name: "",
-            senderId: user.loggedIn?._id,
-            receiverId: friendId
-          }, function(response){
-            setConvId(response.conversationId);
-          })
-        } else {
-          setConvId(fetchConv.data._id);
-        }
+        setConv(fetchConv.data);
+        user.socket?.emit("joinChannel", {
+            channelId: channelId,
+            channelName: fetchConv?.data.name,
+            userId: user.loggedIn._id
+        })
+
       } catch (error) {
         console.log(error)
       }
     }
-    getConversationId();
-  }, [user, friendId]);
+    getConversationData();
+  }, [channelId, user]);
 
   useEffect(() => {
-    if(arrivalMessage && convId === arrivalMessage[0]?.conversationId === true){
-      setMessages(arrivalMessage);
-    }
-  }, [arrivalMessage, convId])
+    const fetchProfiles = () => {
+        conv.members?.map(async (member) => {
+            try{
+                const fetchMemberProfile = await axios.get(`http://localhost:8000/users/${member}`);
+                setMembers(previous => ([...previous, fetchMemberProfile?.data.data]));
+            } catch (error) {
+                console.log(error);
+            }
+        })
+    };
+    fetchProfiles();
 
-  useEffect(() => {
     const getMessages = async () => {
-      if(convId){
         try{
-          const fetchMessages = await axios.get(`http://localhost:8000/messages/${convId}`);
-          setMessages(fetchMessages.data);
+            const fetchMessages = await axios.get(`http://localhost:8000/messages/${channelId}`);
+            setMessages(fetchMessages.data);
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
-      }
     }
     getMessages();
-  }, [convId]);
+}, [conv, channelId])
+
+  useEffect(() => {
+    if(arrivalMessage && channelId === arrivalMessage[0]?.conversationId === true){
+      setMessages(arrivalMessage);
+    }
+  }, [arrivalMessage, channelId])
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({behavior: "smooth"})
@@ -99,13 +96,13 @@ const ConversationPage = () => {
 
     const message = {
       sender: user.loggedIn._id,
-      receiver: friendId, 
       text: newMessage,
-      conversationId: convId
+      channelName: conv?.name,
+      conversationId: channelId
     };
 
     // Send message to the receiver using socket
-    user.socket.emit("sendDirectMessage", message);
+    user.socket.emit("sendChannelMessage", message);
     setNewMessage("");
   };
 
@@ -115,13 +112,14 @@ const ConversationPage = () => {
         <div className='conversation'>
             <div className="chatBoxWrapper">
                 <div>
-                  <RoomName name={friend.name}/>
+                  <RoomName name={conv?.name} channel={true}/>
                 </div>
                 <div className="chatBoxTop">
                   {
                     messages?.map((m) => (
                       <div ref={scrollRef}  key={m._id}>
-                      <Chat chat={m} mine={m.sender === user.loggedIn._id} friend={friend.profilePicture}/>
+                          {/* {console.log(members)} */}
+                        <Chat chat={m} mine={m.sender === user.loggedIn?._id} friend={members?.find(member => member._id === m.sender)?.profilePicture} name={members?.find(member => member._id === m.sender)?.name}/>
                       </div>
                     ))
                   }
@@ -144,4 +142,4 @@ const ConversationPage = () => {
   );
 }
 
-export default ConversationPage;
+export default ChannelPage;
