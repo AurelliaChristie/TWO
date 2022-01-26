@@ -6,6 +6,8 @@ import axios from "axios";
 
 import { AuthContext } from "../../contexts/AuthContext";
 import User from "../User/User";
+import Channel from "../Channel/Channel";
+import AddChannel from "../Channel/AddChannel";
 import profile from "../../assets/default_profile.jfif";
 
 import "./SideBar.css";
@@ -15,13 +17,24 @@ const SideBar = () => {
 
   const [allProfiles, setAllProfiles] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const [allChannels, setAllChannels] = useState([]);
 
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    user.socket?.on("getOnlinesUsers", data => {
-      setOnlineUsers([...onlineUsers, data])
-    });
+    // user.socket?.on("getOnlineUsers", (data) => {
+    //   setOnlineUsers(data)
+    // });
+    // console.log(onlineUsers)
+    const getAllChannels = async () => {
+      try{
+        const channels = await axios.get(`http://localhost:8000/conversations/channels`);
+        setAllChannels(channels.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getAllChannels();
   }, [])
   
 
@@ -51,6 +64,18 @@ const SideBar = () => {
             <FontAwesomeIcon icon="users" />
             <span className="sidebarListItemText ms-3">Channels</span>
           </li>
+          <ul className="sidebarUserList">
+            {allChannels?.map((channel) => {
+                return(
+                  <Link to={`/chat/${channel._id}?channel=true`} className="text-decoration-none text-white"  key={channel._id}>
+                    <Channel channel={channel}/>
+                  </Link>
+                )
+                } 
+              )
+            }
+            <AddChannel/>
+          </ul>
           <li className="sidebarListItem">
             <FontAwesomeIcon icon="comment" />
             <span className="sidebarListItemText ms-3">Direct Messages</span>

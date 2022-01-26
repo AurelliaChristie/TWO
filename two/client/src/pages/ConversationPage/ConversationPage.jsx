@@ -41,7 +41,7 @@ const ConversationPage = () => {
 
     const getConversationId = async() => {
       try{
-        const fetchConv = await axios.get(`http://localhost:8000/conversations/${user?.loggedIn?._id}/${friendId}`);
+        const fetchConv = await axios.get(`http://localhost:8000/conversations/dm/${user?.loggedIn?._id}/${friendId}`);
         
         if(fetchConv.data === null){
           user.socket?.emit("createConversation", {

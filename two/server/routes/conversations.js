@@ -32,7 +32,7 @@ router.post("/", async(req, res) => {
 });
 
 // Get Conversation of 2 people
-router.get("/:userId/:friendId", async (req, res) => {
+router.get("/dm/:userId/:friendId", async (req, res) => {
     try{
         const conversation = await Conversation.findOne({
             $and: [
@@ -46,8 +46,20 @@ router.get("/:userId/:friendId", async (req, res) => {
     } 
 })
 
+// Get All Channel
+router.get("/channels", async (req, res) => {
+    try{
+        const conversation = await Conversation.find({
+            name:   {"$exists" : true, "$ne" : ""}
+        });
+        res.status(200).json(conversation);
+    } catch (error) {
+        res.status(500).json(error);
+    }
+})
+
 // Get Channel 
-router.get("/:channelName", async (req, res) => {
+router.get("/channels/:channelName", async (req, res) => {
     try{
         const conversation = await Conversation.findOne({
             name: req.params.channelName
