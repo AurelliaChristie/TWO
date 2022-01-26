@@ -10,17 +10,25 @@ import profile from "../../assets/default_profile.jfif";
 
 import "./SideBar.css";
 
-const SideBar = ({onlineUsers}) => {
+const SideBar = () => {
   const public_folder = process.env.REACT_APP_PUBLIC_FOLDER;
 
   const [allProfiles, setAllProfiles] = useState([]);
+  const [onlineUsers, setOnlineUsers] = useState([]);
 
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
+    user.socket?.on("getOnlinesUsers", data => {
+      setOnlineUsers([...onlineUsers, data])
+    });
+  }, [])
+  
+
+  useEffect(() => {
     const getAllProfile = async () => {
       try{
-        const profiles = await axios.get(`http://localhost:8000/users/${user.loggedIn._id}/all`);
+        const profiles = await axios.get(`http://localhost:8000/users/${user.loggedIn?._id}/all`);
         setAllProfiles(profiles.data.data);
       } catch (error) {
         console.log(error);

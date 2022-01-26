@@ -5,7 +5,6 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
-
 dotenv.config();
 const path = require("path");
 
@@ -16,8 +15,19 @@ const conversationRoute = require("./routes/conversations");
 const messageRoute = require("./routes/messages");
 const uploadRoute = require("./routes/upload");
 
-// Initiate app
+const Conversation = require("./models/Conversation");
+const Message = require("./models/Message");
+
+// Initiate app & socket
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server, {
+    cors:{
+        origin:"http://localhost:3000"
+    }
+});
 
 // Connect to database
 mongoose.connect(process.env.MONGO_URL, {
@@ -46,8 +56,105 @@ app.use("/conversations", conversationRoute);
 app.use("/messages", messageRoute);
 app.use("/upload", uploadRoute);
 
+// Setting up Sockets
+
+// Specify user
+let users = new Map();
+
+// User connect
+const addUser  = (userId, socketId) => {
+    users.set(userId, socketId);
+};
+
+// User disconnect
+const removeUser  = (userId, socketId) => {
+    users.delete(userId);
+};
+
+// Get a user's socket data
+const getUser = (userId) => {
+    return(users.get(userId));
+};
+
+// Create connection
+io.on("connection", (socket) => {
+    // A user connect
+    console.log("A user connected.");
+    addUser(socket.handshake.query["userId"], socket.id);
+    io.emit("getOnlineUsers", users);
+
+    // Send & get direct message
+    socket.on("createConversation", async ({name, senderId, receiverId}, callback) => {
+        if(name === ""){
+            const newConversation = new Conversation({
+                name: name,
+                members: [senderId, receiverId]
+            });
+
+            try{
+                const savedConversation = await newConversation.save();
+                callback({
+                    conversationId: savedConversation._id
+                });
+            } catch (error) {
+                res.status(500).json(error);
+            }
+        }  else {
+            const newConversation = new Conversation({
+                name: name,
+                members: [senderId]
+            });
+
+            try{
+                const savedConversation = await newConversation.save();
+                callback({
+                    conversationId: savedConversation._id
+                });
+            } catch (error) {
+                res.status(500).json(error);
+            }
+        }
+    });
+
+
+    // Send & get direct message
+    socket.on("sendDirectMessage", async ({sender, receiver, text, conversationId}) => {
+        const receiverSocket = getUser(receiver);
+        const senderSocket = getUser(sender);
+        const newMessage = new Message({
+            conversationId: conversationId,
+            sender: sender,
+            text: text
+        });
+        
+        try{
+            const savedMessage = await newMessage.save();
+            const updatedMessages = await Message.find({
+                conversationId: conversationId
+            });
+            io.to(senderSocket).emit("getDirectMessage", 
+                updatedMessages
+            );
+            io.to(receiverSocket).emit("getDirectMessage", 
+                updatedMessages
+            );
+        } catch (error) {
+            res.status(500).json(error);
+        }
+    });
+
+    // A user disconnect
+    socket.on("disconnect", () =>{
+        console.log("A user disconnected.");
+        removeUser(socket.id);
+
+        // Send online users to everyone
+        io.emit("getOnlineUsers", users);
+    });
+});
+
 // Start server
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 });

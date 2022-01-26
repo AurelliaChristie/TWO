@@ -7,8 +7,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { AuthContext } from './contexts/AuthContext';
 import { AuthReducer } from "./reducers/AuthReducer";
-import { SocketContext } from "./contexts/SocketContext";
-import { SocketReducer } from "./reducers/SocketReducer";
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUserCircle, faUsers, faBell, faEllipsisV, faHeart, faImages, faTimesCircle, faRss, faBars, faComment, faAngleDown, faAngleUp, faLaugh } from '@fortawesome/free-solid-svg-icons';
@@ -16,14 +14,11 @@ import { faUserCircle, faUsers, faBell, faEllipsisV, faHeart, faImages, faTimesC
 library.add(faUserCircle, faUsers, faBell, faEllipsisV, faHeart, faImages, faTimesCircle, faRss, faBars, faComment, faAngleDown, faAngleUp, faLaugh );
 
 const ContextProvider = () => {
-  const [user, dispatchUser] = useReducer(AuthReducer, {loggedIn: null});
-  const [socket, dispatchSocket] = useReducer(SocketReducer, {socket: {socket:null, onlineUsers: []}});
+  const [user, dispatchUser] = useReducer(AuthReducer, {loggedIn: null, socket: null});
 
   return(
     <AuthContext.Provider value = {{user, dispatchUser}}>
-      <SocketContext.Provider value = {{socket, dispatchSocket}}>
         <App />
-      </SocketContext.Provider>
     </AuthContext.Provider>
   )
 }

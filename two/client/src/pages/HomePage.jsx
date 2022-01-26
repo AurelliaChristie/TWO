@@ -8,36 +8,26 @@ import SideBar from '../components/SideBar/SideBar';
 import Timeline from '../components/Timeline/Timeline';
 
 import { AuthContext } from "../contexts/AuthContext";
-import { SocketContext } from "../contexts/SocketContext";
 
 const HomePage = () => {
     const { user } = useContext(AuthContext);
-    const { socket } = useContext(SocketContext);
-    const currentUser = user.loggedIn;
-    const [onlineUsers, setOnlineUsers] = useState([]);
+    const currentUser = user?.loggedIn;
     const [login, setLogin] = useState(false);
     const [posts, setPosts] = useState([]);
 
     useEffect(() => {
-        if(user.loggedIn !== null){
+        if(currentUser !== null){
            setLogin(true)
 
            const getPosts = async ()  => {
-            const fetchPosts = await axios.get(`http://localhost:8000/posts/timeline/${currentUser._id}`);
+            const fetchPosts = await axios.get(`http://localhost:8000/posts/timeline/${currentUser?._id}`);
             setPosts(fetchPosts.data.data);
             }
            getPosts();
         }
     },[user]);
-
-    useEffect(() => {
-        if(socket !== null){
-            setOnlineUsers(socket?.onlineUsers)
-            console.log(onlineUsers)
-        }
-    }, [socket])
     
-    if(login === false && onlineUsers?.length === 0){
+    if(login === false){
         // Landing Page
         return (
             <Container fluid>
@@ -49,7 +39,7 @@ const HomePage = () => {
         // If loggedIn
         return(
             <div className="homeContainer">
-                <SideBar onlineUsers={onlineUsers}/>
+                <SideBar/>
                 <Timeline posts={posts}/>
             </div>
         )

@@ -27,7 +27,7 @@ const timeSince = (date) => {
   if (interval > 1) {
     return Math.floor(interval) + " minutes ago";
   }
-  return Math.floor(seconds) + " seconds ago";
+  return "just now";
 };
 
 const Chat = ({chat, mine, friend}) => {
