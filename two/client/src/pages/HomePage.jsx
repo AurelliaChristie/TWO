@@ -21,7 +21,11 @@ const HomePage = () => {
 
            const getPosts = async ()  => {
             const fetchPosts = await axios.get(`http://localhost:8000/posts/timeline/${currentUser?._id}`);
-            setPosts(fetchPosts.data.data);
+            setPosts(
+                fetchPosts.data.data?.sort((p1, p2) => {
+                    return new Date(p2.createdAt) - new Date(p1.createdAt);
+                })
+            )
             }
            getPosts();
         }

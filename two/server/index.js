@@ -80,9 +80,9 @@ const getUser = (userId) => {
 // Create connection
 io.on("connection", (socket) => {
     // A user connect
-    console.log("A user connected.");
+    console.log("A user connected.")
     addUser(socket.handshake.query["userId"], socket.id);
-    io.emit("getOnlineUsers", users);
+    socket.broadcast.emit("onlineUsers", users);
 
     // Send & get direct message
     socket.on("createConversation", async ({name, senderId, receiverId}, callback) => {
@@ -196,7 +196,7 @@ io.on("connection", (socket) => {
         removeUser(socket.id);
 
         // Send online users to everyone
-        io.emit("getOnlineUsers", users);
+        socket.broadcast.emit("onlineUsers", users);
     });
 });
 

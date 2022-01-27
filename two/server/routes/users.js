@@ -86,14 +86,9 @@ router.put("/:userId", async(req, res) => {
                 $set: req.body
             });
             const updatedUser = await User.findById(req.params.userId);
-            const token = jwt.sign({
-                ...updatedUser
-            },
-                process.env.TOKEN
-            )
             res.status(200).json({
                 message: "Account has been updated.",
-                token: token
+                data: updatedUser
             });
         } catch (error) {
             return res.status(500).json(error);

@@ -16,16 +16,16 @@ const SideBar = () => {
   const public_folder = process.env.REACT_APP_PUBLIC_FOLDER;
 
   const [allProfiles, setAllProfiles] = useState([]);
-  const [onlineUsers, setOnlineUsers] = useState([]);
+  // const [onlineUsers, setOnlineUsers] = useState([]);
   const [allChannels, setAllChannels] = useState([]);
 
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    // user.socket?.on("getOnlineUsers", (data) => {
+    // user.socket?.on("onlineUsers", (data) => {
     //   setOnlineUsers(data)
     // });
-    // console.log(onlineUsers)
+
 
     user.socket?.on("updatedChannelList", (data) => {
       setAllChannels(data)
@@ -87,10 +87,11 @@ const SideBar = () => {
           </li>
           <ul className="sidebarUserList">
             {allProfiles?.map((profile) => {
-                let online = onlineUsers?.filter((user) => user.userId === profile._id);
+                // let online = onlineUsers?.filter((user) => user.userId === profile._id);
                   return(
                     <Link to={`/chat/${profile._id}`} className="text-decoration-none text-white"  key={profile._id}>
-                      <User user={profile} online={online?.length > 0 ? true: false}/>
+                      <User user={profile} />
+                      {/* online={online?.length > 0 ? true: false} */}
                     </Link>
                   )
                 } 

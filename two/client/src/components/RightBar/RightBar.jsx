@@ -6,7 +6,7 @@ const RightBar = ({user}) => {
 
     return (
       <div className="rightbar">
-        <h4 className="rightbarTitle">User information</h4>
+        <h4 className="rightbarTitle">User Info</h4>
         <div className="rightbarInfo">
           <div className="rightbarInfoItem">
             <span className="rightbarInfoKey">Division:</span>

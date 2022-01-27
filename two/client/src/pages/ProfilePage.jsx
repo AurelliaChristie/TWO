@@ -15,13 +15,13 @@ const ProfilePage = () => {
           setUser(fetchUser.data.data);
         }
         getUser();
-    }, [user])
+    }, [userId])
 
     // Landing Page
     return(
         <div className="homeContainer">
             <SideBar/>
-            <Profile user={user}/>
+            <Profile users={user}/>
         </div>
     )
 };

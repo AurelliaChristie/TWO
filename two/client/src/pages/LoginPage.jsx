@@ -42,7 +42,7 @@ const LoginPage = () => {
 
     if(user.loggedIn === null){
         return (
-            <Container fluid>
+            <Container fluid className="pb-5 login">
                 <Card className="py-5 p-3 my-5 mx-auto my-5 w-50 sl-card">
                     <Row className="p-2">
                         <Col>

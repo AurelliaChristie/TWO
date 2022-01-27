@@ -29,7 +29,7 @@ const NavBar = () => {
                                 <img src={logo} alt="logo" width="70px" height="40px"/>
                             </Link>
                         </Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                        {/* <Navbar.Toggle aria-controls="basic-navbar-nav" />
                         <Navbar.Collapse className="justify-content-end">
                             <Nav>
                                 <Link to="/login" className="text-black text-decoration-none mx-2 my-auto">Log In</Link>
@@ -37,7 +37,7 @@ const NavBar = () => {
                                     <Link to="/signup" className="btn btn-dark btn-md" style={{marginRight: "20px", backgroundColor: "#1640E4", borderColor: "#1640E4"}}>Sign Up</Link>
                                 </div>
                             </Nav>
-                        </Navbar.Collapse>
+                        </Navbar.Collapse> */}
                     </Container>
             </Navbar>
         )
