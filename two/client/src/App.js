@@ -41,11 +41,11 @@ const App = () => {
 
   if(validate){
     return (
-      <MainRouter/>
+        <MainRouter/>
     )
   } else {
     return (
-      <Loading/>
+        <Loading/>
     )
   }
   

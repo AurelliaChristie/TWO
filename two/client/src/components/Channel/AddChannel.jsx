@@ -9,7 +9,6 @@ import "./AddChannel.css";
 
 const AddChannel = () => {
     const navigate = useNavigate();
-    const [convId, setConvId] = useState("");
     const [channel, setChannel] = useState("");
     const { user } = useContext(AuthContext);
     const handleChannelChange = (e) => {
@@ -22,7 +21,6 @@ const AddChannel = () => {
             name: channel,
             senderId: user.loggedIn?._id
         }, function(response){
-            setConvId(response.conversationId);
             navigate(`/chat/channels/${response.conversationId}`, {replace: true});
         
             setChannel("");
@@ -34,7 +32,7 @@ const AddChannel = () => {
                 <Form.Control type="text" placeholder="New Channel"  onChange={(e) => handleChannelChange(e)} value={channel}/>
             </span>
             <div className="addChannelImageContainer">
-                <button className="btn btn-dark btn-md" type="submit" onClick={handleSubmit}><FontAwesomeIcon icon="plus"/></button>
+                <button className="btn btn-secondary btn-md" type="submit" onClick={handleSubmit}><FontAwesomeIcon icon="plus"/></button>
             </div>
         </li>
     )

@@ -48,7 +48,7 @@ const CreatePost = ({ user }) => {
               <div className="d-flex flex-row align-items-center px-2">
                     <img className="rounded-circle me-2" 
                         src={
-                            user.profilePicture ?
+                            user?.profilePicture ?
                             public_folder + user.profilePicture :
                             profile
                         } 

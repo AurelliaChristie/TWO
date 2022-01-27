@@ -118,7 +118,6 @@ const ChannelPage = () => {
                   {
                     messages?.map((m) => (
                       <div ref={scrollRef}  key={m._id}>
-                          {/* {console.log(members)} */}
                         <Chat chat={m} mine={m.sender === user.loggedIn?._id} friend={members?.find(member => member._id === m.sender)?.profilePicture} name={members?.find(member => member._id === m.sender)?.name}/>
                       </div>
                     ))

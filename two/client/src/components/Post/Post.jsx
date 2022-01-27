@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import axios from "axios";
-
+import { Dropdown } from "react-bootstrap";
 import profile from "../../assets/default_profile.jfif";
+import heart from "../../assets/heart.png";
 
 import "./Post.css";
-
+import langs from "../../assets/language";
 
 const Post = ({ post, currentUser }) => {
   const public_folder_posts = process.env.REACT_APP_PUBLIC_FOLDER_POSTS;
@@ -14,6 +15,24 @@ const Post = ({ post, currentUser }) => {
   const [like, setLike] = useState(post.likes.length > 0 ? post.likes.length : 0);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
+  const [caption, setCaption] = useState(post.caption);
+
+  const handleLangChange = async(e, key) => {
+    if(key === "ori"){
+      setCaption(post.caption);
+    } else {
+      try{
+        const translated = await axios.post("http://localhost:8000/messages/translate/text", {
+          text: post.caption,
+          lang: key
+        })
+
+        setCaption(translated.data)
+      } catch (error){
+        console.log(error);
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -89,18 +108,30 @@ const Post = ({ post, currentUser }) => {
                       <span className="font-weight-bold">{user?.name}</span>
                       <span className="text-black-50">{timeSince(post.createdAt)}</span></div>
                   </div>
-                  <div className="px-2"><FontAwesomeIcon icon="ellipsis-v"/></div>
+                  <Dropdown className="me-2">
+                    <Dropdown.Toggle variant="secondary" id="dropdown-basic">
+                      <FontAwesomeIcon icon="globe"/>
+                      </Dropdown.Toggle>
+
+                      <Dropdown.Menu>
+                        {Object.keys(langs).map(function(key, index) {
+                          return(
+                            <Dropdown.Item id={langs[key]} key={key} onClick={(e) => handleLangChange(e, key)}>{langs[key]}</Dropdown.Item>
+                          )
+                        })}
+                        
+                      </Dropdown.Menu>
+                  </Dropdown>
             </div>
             <div className="p-2 px-3">
               <img className="img-fluid img-responsive" src={public_folder_posts + post.image} alt="Post"/>
             </div>
             <div className="p-2 px-3">
-              <span>{post.caption}</span>
+              <span>{caption}</span>
             </div>
-            <div className="d-flex justify-content-start p-2 px-3 py-3">
-              <FontAwesomeIcon icon="heart" className={`me-2 ${isLiked ? "like" : "text-black"}`} style={{cursor: "pointer"}} onClick={likeHandler}/>
-              <span>{like}</span>
-              <span className="ms-auto">comment</span>
+            <div className="d-flex justify-content-end p-2 px-3 py-3">
+              <img src={heart} className={`me-2`} style={{height: "25px", cursor: "pointer"}} onClick={likeHandler}/>
+              <span>{like} likes</span>
             </div>
           </div>
         </div>
@@ -121,7 +152,7 @@ const Post = ({ post, currentUser }) => {
                   <div className="px-2"><FontAwesomeIcon icon="ellipsis-v"/></div>
             </div>
             <div className="p-2 px-3">
-              <span>{post.caption}</span>
+              <span>{caption}</span>
             </div>
             <div className="d-flex justify-content-end p-2 py-3">
               
